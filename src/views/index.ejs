@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>FER WEB2 - 2. projekt</h1>
+        <hr/>
+    </header>
+
+    <main>
+        <h2>Ranjivosti</h2>
+        <p>
+            U vidu drugog projekta implementirane su dvije ranjivosti. XSS DOM i BAC.<br/>
+            Za potrebe iskorištavanja ranjivosti, korisnik mora biti prijavljen kako bi se čitao njegov <i>cookie</i>.<br/>
+            Postoje dvije uloge korisnika: <br/>
+            'admin' - administrator, koji može vidjeti sve podatke; </br>
+            'user' - obični korisnik, koji može vidjeti samo svoje podatke
+        </p>
+        <br/>
+
+        <% if(logged_in) { %>
+            <p>
+                Prijavljeni ste kao: <span style="padding: 0.5rem; background-color: #ededed; font-family: monospace;"><%= username %>, ID: <%= user_id %>, uloga: '<%= role %>'</span>
+            </p>
+            <br/>
+            <button id="btn_logout">Odjava</button>
+        <% } else { %>
+            <p>Niste prijavljeni! Prijavite se za nastavak.</p>
+            <br/>
+            <form method="POST" onsubmit="event.preventDefault(); return handleSubmit()">
+                <label for="username">Korisničko ime:</label>
+                <input type="text" name="username" id="input_username" required>
+                <br/>
+                <label for="password">Lozinka:</label>
+                <input type="password" name="password" id="input_password" required>
+                <br/>
+                <br/>
+                <button id="btn_login" type="submit">Prijava</button>
+            </form>
+        <% } %>
+
+        <br/>
+        <br/>
+
+        <div>
+            <hr/>
+            <h2>1. Cross-site scripting (XSS) - DOM based XSS</h2>
+            <p>
+                Za ovu ranjivost korisnik učitava ranjivu web-stranicu gdje se upit iz zahtjeva 
+                injektira direktno u DOM strukturu dokumenta i potencijalno izvrši maliciozni kod. <br/>
+                Ranjivost se može riješiti tako da se 'innerHTML' zamjeni sa sigurnijim metodama (npr. textContent) i 
+                postavljanjem 'httpOnly' na 'true' za sve autentifikacijske kolačiće. <br/></br>
+                <strong>Uputa:</strong> Pritiskom na gumb 'Isprobaj ranjivost' priprema se maliciozni zahtjev za iskorištavanje ranjivosti 
+                te pritiskom na gumb 'Odvedi me na ovaj URL' simulira se korisnikova akcija korištenja poveznice (možete i kopirati poveznicu, učinak je isti).
+            </p>
+            <br/>
+            <input type="checkbox" name="xss_enable" id="xss_enable" <%= vulnerability_1 === true ? 'checked' : '' %>>
+            <label for="xss_enable" id="label_xss_enable"></label>
+            <br/>
+            <br/>
+            <h3>Primjer 1</h3>
+            <p>
+                Prvi primjer se odnosi na ispis korisničkog <i>cookieja</i> unutar domaće web stranice. <br/>
+                Inače namjena je ispisati 'Dobro došli, [ime korisnika zadano iz parametra "name"]'. <br/>
+                Napadač iskorištava ranjivost 'innerHTML' metode i izvršava maliciozni kod gdje se prikazuje korisnikov <i>cookie</i> sjednice.
+            </p>
+            <input type="url" name="xss1_input" id="xss1_input" placeholder="<%= base_url+'/welcome?name=korisniče' %>">
+            <button type="button" id="xss1_button">Isprobaj ranjivost</button>
+            <button type="button" id="xss1_test" disabled>Odvedi me na ovaj URL</button>
+            <br/>
+            <br/>
+            <h3>Primjer 2</h3>
+            <p>
+                Drugi primjer mijenja poveznicu na početnu stranicu tako što napadač promijeni URL poveznice iz početne stranice, na napadačevu. <br/>
+                Stranica 'welcome' sadrži poveznicu 'Početna'. Ako korisnik pritisne na nju, napadač može pročitati korisnikov <i>cookie</i> sjednice.
+            </p>
+            <input type="url" name="xss2_input" id="xss2_input" placeholder="<%= base_url+'/welcome?name=korisniče' %>">
+            <button type="button" id="xss2_button">Isprobaj ranjivost</button>
+            <button type="button" id="xss2_test" disabled>Odvedi me na ovaj URL</button>
+        </div>
+        <br/>
+        <div>
+            <hr/>
+            <h2>2. Loša kontrola pristupa (Broken Access Control)</h2>
+            <p>
+                Ova ranjivost se tiče neispravne provjere autorizacije, odnosno ispravnog dodjeljivanja prava resursima. <br/>
+                Ranjivost se rješava ispravnom provjerom korisničkog ID-a i korisničke uloge. <br/>
+                <strong>Uputa:</strong> Mijenjanjem broja ID-a korisnika (input), aktualno se povlače podaci o korisniku s tim ID-jem. <br/>
+            </p>
+            <br/>
+            <input type="checkbox" name="bac_enable" id="bac_enable" <%= vulnerability_2 === true ? 'checked' : '' %>>
+            <label for="bac_enable" id="label_bac_enable"></label>
+            <br/>
+            <br/>
+            <br/>
+            <h3>Primjer</h3>
+            <p>
+                U sivom tekstualnom okviru se prikazuje URL koji se poziva s poslužitelja, a uokvireni prozor prikazuje rezultat s poslužitelja. <br/>
+                Obični korisnik (role = 'user') mora vidjeti jedino vlastite podatke (gdje se ID podudara), inače se mora izbacivati pogreška (ako ranjivosti nema). <br/>
+                Loša kontrola pristupa omogućava svim korisnicima prikaz svih podataka, bez provjere ispravnog vlasnika ili uloge. Administrator može vidjeti sve podatke.
+            </p>
+            <label for="bac_id_input">Odaberite ID korisnika za kojeg želite dobiti informacije</label>
+            <input type="number" name="bac_id_input" id="bac_id_input" value="1">
+            <br/>
+            <p id="prepared_url"></p>
+            <br/>
+            <pre id="fetched_items"></pre>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Antonio Šantak</p>
+    </footer>
+
+    <script>
+        let baseURL = "<%= base_url %>";
+    </script>
+    <script src="/js/script.js"></script>
+    <script>
+        if(document.getElementById("btn_logout")) document.getElementById("btn_logout").addEventListener("click", async () => {
+            const response = await fetch("/logout", {
+                method: "POST"
+            });
+
+            if(!response.ok){
+                const { message } = await response.json();
+                console.error(`Pogreška ${response.status}: ${response.statusText}`);
+                alert(message);
+                return;
+            }
+
+            window.location.reload();
+        })
+
+        async function handleSubmit(){
+
+            let input_username = document.getElementById("input_username");
+            let input_password = document.getElementById("input_password");
+
+            if(!input_username || !input_password){
+                alert("Neuspješna čitanje korisničkog imena i lozinke!");
+                return;
+            }
+
+            if(!input_username.value.length || !input_password.value.length){
+                alert("Neispravna veličina korisničkog imena ili lozinke!");
+                return;
+            }
+
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: input_username.value,
+                    password: input_password.value
+                })
+            })
+
+            if(!response.ok){
+                const { message } = await response.json();
+                console.error(`Pogreška ${response.status}: ${response.statusText}`);
+                alert(message);
+                return;
+            }
+
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

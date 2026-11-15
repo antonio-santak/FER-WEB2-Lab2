@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napadačeva stranica</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Ovo je primjer napadačeve stranice</h1>
+    <h2>Nijedna poveznica iz aplikacije ne pokazuje na ovu stranicu.<br>Ovo je primjer web stranice na koju napadač može navesti korisnika</h2>
+    <p>Korisnikov ukraden cookie: <span id="txt_content"></span></p>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const cookie = urlParams.get('cookie');
+        document.getElementById("txt_content").textContent=cookie; 
+    </script>
+</body>
+</html>

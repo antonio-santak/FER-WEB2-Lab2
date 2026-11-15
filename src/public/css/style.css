@@ -1,0 +1,117 @@
+*{
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+html, body{
+    min-height: 100vh;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+}
+
+main{
+    flex: 1;
+}
+
+footer{
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+header, main{
+    padding: 1rem;
+}
+
+p, label{
+    font-size: 1rem;
+}
+
+hr{
+    height: 1px;
+    border: none;
+    background-color: var(--text-color);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+:root{
+    --text-color: black;
+    --bg-color: white;
+}
+
+input[type="url"]{
+    font-family: monospace;
+    padding: 4px;
+    field-sizing: content;
+    min-width: 300px;
+    max-width: 100%;
+}
+
+button:disabled{
+    cursor: not-allowed;
+    background-color: gray;
+    color: black;
+}
+
+button{
+    cursor: pointer;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 100rem;
+}
+
+#prepared_url{
+    color: rgb(51, 51, 51);
+    background-color: rgb(219, 219, 219);
+    padding: 8px;
+    user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    min-width: 100px;
+    display: inline-block;
+}
+
+input[type="number"]{
+    padding: 1rem;
+    width: 100px;
+}
+
+#fetched_items{
+    border: 1px solid black;
+    min-width: 300px;
+    min-height: 100px;
+    padding: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    overflow: auto;
+}
+
+input{
+    padding: 4px;
+}
+
+input[type="checkbox"]{
+    width: 1rem;
+    height: 1rem;
+}
+
+button{
+    font-size: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
